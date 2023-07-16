@@ -33,7 +33,7 @@ void Server::RemoveClient(Client *clientToRemove) {
     m_cli.unlock();
 }
 
-// Generate a NickName for c
+// Generate a NickName for a new client
 string Server::GenerateNewNickname() {
     this->lastId += 1;
     string nickname = "client_";
@@ -41,12 +41,14 @@ string Server::GenerateNewNickname() {
     return nickname;
 }
 
+// 
 void Server::Log(string msg) {
     m_log.lock();
     cout << "-> " << msg << endl;
     m_log.unlock();
 }
 
+// Send to All clients from Server 
 void Server::SendToAll(string msg) {
     Log("(server) " + msg);
     string msgToSend = msg + " <<<<<";
@@ -56,6 +58,7 @@ void Server::SendToAll(string msg) {
     }
 }
 
+// Send to all Clients from specific client
 void Server::SendToAll(string msg, Client *sender) {
     Log("(" + sender->GetNickname() + ") " + msg);
     string msgToSend = msg;
@@ -64,7 +67,7 @@ void Server::SendToAll(string msg, Client *sender) {
         SendToClient(msgToSend, *cli, sender);
     }
 }
-
+// Send messages between client and Server
 void Server::SendToClient(string msg, Client *receiver) {
     string msgToSend = ">>>>> " + msg;
     
@@ -73,6 +76,7 @@ void Server::SendToClient(string msg, Client *receiver) {
     m_cli.unlock();
 }
 
+// Send messages between clients
 void Server::SendToClient(string msg, Client *receiver, Client *sender) {
     string msgToSend;
     if(sender == receiver) {
@@ -87,6 +91,7 @@ void Server::SendToClient(string msg, Client *receiver, Client *sender) {
     m_cli.unlock();
 }
 
+// Client execute command 
 void Server::ExecuteCommand(string commandReceived, Client *sender) {
     string command;
     int argc;
@@ -113,6 +118,7 @@ void Server::CommandInvalid(Client *sender) {
     SendToClient("Comando inválido!", sender);
 }
 
+// Server listen clients to connect
 void Server::ListenForClients() {
     while(true) {
         Socket *socket = this->listenerSocket->Accept();
