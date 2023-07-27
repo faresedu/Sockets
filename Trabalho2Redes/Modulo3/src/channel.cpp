@@ -25,6 +25,41 @@ vector<Client *> Channel::GetClientsInChannel() {
     return this->clientsOnChannel;
 }
 
+string Channel::ClientsInvitedMessage() {
+    if(!this->IsPrivate()) {
+        return "O canal é público, não há lista de convidados\n";
+    }
+
+    string message = "";
+    message += "Os usuários convidados para o canal são:\n";
+    message += " { ";
+    for(vector<string>::iterator str = this->clientsInvited.begin() ; str != this->clientsInvited.end() ; str++) {
+        message += (*str) + " ; ";
+    }
+    message += " }\n";
+    return message;
+}
+
+string Channel::ClientsOnChannelMessage() {
+    string message = "";
+    message += "Os usuários online no canal são:\n";
+    for(vector<Client *>::iterator cli = this->clientsOnChannel.begin() ; cli != this->clientsOnChannel.end() ; cli++) {
+        if((*cli)->IsAdm()) {
+            message += " <admin> ";
+        }
+        else {
+            message += "         ";
+        }
+        message += (*cli)->GetNickname();
+        if((*cli)->IsMute()) {
+            message += " (mutado)";
+        }
+        message += "\n";
+    }
+    message += "\n";
+    return message;
+}
+
 bool Channel::IsPrivate() {
     return this->privateChannel;
 }
@@ -43,9 +78,15 @@ bool Channel::IsClientInvited(string nickname) {
 }
 
 void Channel::InviteClient(string nickname) {
+    if(!IsPrivate()) return;
+        
     if(!IsClientInvited(nickname)) {
         this->clientsInvited.push_back(nickname);
     }
+}
+
+void Channel::ResetInvitedList() {
+    this->clientsInvited.clear();
 }
 
 bool Channel::AddClient(Client *client) {
@@ -68,14 +109,14 @@ bool Channel::AddClient(Client *client) {
 void Channel::RemoveClient(Client *client) {
     if(!IsClientOnChannel(client)) return;
     
-    bool removedAdm = false;
     for(vector<Client *>::iterator cli = this->clientsOnChannel.begin() ; cli != this->clientsOnChannel.end() ; cli++) {
         if((*cli) == client) {
             this->clientsOnChannel.erase(cli);
-
+            
             client->SetChannel(NULL);
             client->SetAdm(false);
             client->SetMute(false);
+            return;
         }
     }
 }

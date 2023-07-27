@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         socket->Listen(SOMAXCONN);
         thread listeningThread(waitingFriendToConnect, socket, targetIP);
         listeningThread.detach();
-        cout << "Esperando conexão na Porta: " << ntohs((uint16_t) socket->GetAddr().sin_port) << endl;
+        cout << "Esperando conexão na Porta: " << socket->GetPort() << endl;
         cout << endl;
     }
 

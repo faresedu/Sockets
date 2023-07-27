@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <thread>
@@ -29,7 +30,7 @@ class Server {
         Client * AddClientToServer(Socket *clientSocket);
         void AddClientToChannel(Client *client, Channel *channel);
         void RemoveClientFromServer(Client *clientToRemove);
-        void RemoveClientFromChannel(Client *clientToRemove);
+        void RemoveClientFromChannel(Client *clientToRemove, Channel **channel);
 
         void Log(string msg);
         void SendToChannel(string msg, Channel *channel);
@@ -39,10 +40,11 @@ class Server {
 
         void ExecuteCommand(string commandReceived, Client *sender);
         void CommandHelp(Client *sender);
+        void CommandInfo(Client *sender);
         void CommandPing(Client *sender);
+        void CommandNickname(string nickname, Client *sender);
         void CommandJoin(string channelName, Client *sender);
         void CommandPart(Client *sender);
-        void CommandNickname(string nickname, Client *sender);
         void CommandKick(string nickname, Client *sender);
         void CommandWhois(string nickname, Client *sender);
         void CommandMute(string nickname, Client *sender);
@@ -51,10 +53,10 @@ class Server {
         void CommandInvite(string nickname, Client *sender);
         void CommandInvalid(Client *sender);
 
-        bool RespondIfClientNotAdm(Client *client);
-        bool RespondIfNickNonExisting(string nickname, Client *client);
-        bool RespondIfNotEnoughArguments(int have, int needed,  Client *client);
         bool RespondIfNotInChannel(Client *client);
+        bool RespondIfClientNotAdm(Client *client);
+        bool RespondIfNickNonExistingInChannel(string nickname, Channel *channel, Client *client);
+        bool RespondIfNotEnoughArguments(int have, int needed,  Client *client);
 
     protected:
         void ListenForClients();

@@ -38,6 +38,7 @@ Socket::Socket(string ip) {
 Socket::Socket(int port) {
     Init(INADDR_ANY, htons(port));
 }
+
 Socket::Socket() {
     Init(INADDR_ANY, 0);
 }
