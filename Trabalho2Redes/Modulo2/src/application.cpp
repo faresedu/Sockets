@@ -34,6 +34,7 @@ Application::Application() {
     this->socket = new Socket();
 }
 
+// Check if client want to connect with server or quit
 void Application::ConnectionStage() {
     while(true) {
         cout << "Digite o comando /connect para entrar no chat" << endl;
@@ -63,6 +64,7 @@ void Application::ConnectionStage() {
     }
 }
 
+// Begin a thread for servidor and listen client connected
 void Application::Launch() {
     thread receivingThread([] (Application *app) {app->ReceiveMessages();}, this);
     receivingThread.detach();

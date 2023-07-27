@@ -26,7 +26,7 @@ void createChatThreads(Socket *socket);
 
 int main(int argc, char *argv[]) {
     setlocale(LC_ALL, "pt_BR.UTF-8");
-    signal(SIGINT, catchInterruption);
+    signal(SIGINT, catchInterruption);  // Listen if someone exits
 
     string targetIP = IP_DEFAULT;
     int targetPort = PORT_DEFAULT;
@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
     Socket *socket = new Socket();
     bool connected = socket->Connect(targetIP, targetPort, CONNECT_ATTEMPT_TIMEOUT);
 
+    // Verify if the user gonna be a "server" to a friend(client) connect with
     if(connected) {
         cout << "Você se conectou ao seu amigo!" << endl;
         cout << endl;
@@ -61,6 +62,7 @@ void catchInterruption(int a) {
     leave = true;
 }
 
+// Listen and read messages received
 void receivingFromFriend(Socket *socket) {
     while(true) {
         string msgReceived = socket->Receive();
@@ -72,6 +74,7 @@ void receivingFromFriend(Socket *socket) {
     }
 }
 
+// Send messagens catch in terminal
 void sendingToFriend(Socket *socket) {    
     while(true) {
         string fullMsgToSend;
@@ -84,6 +87,7 @@ void sendingToFriend(Socket *socket) {
     }
 }
 
+// The fist client waiting the user who he want to connect to
 void waitingFriendToConnect(Socket *listenerSocket, string friendIP) {
     while(true) {
         Socket *client = listenerSocket->Accept();

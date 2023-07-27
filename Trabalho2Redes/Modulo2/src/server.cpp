@@ -41,7 +41,7 @@ string Server::GenerateNewNickname() {
     return nickname;
 }
 
-// 
+// Print logs in the server terminal
 void Server::Log(string msg) {
     m_log.lock();
     cout << "-> " << msg << endl;
@@ -108,6 +108,7 @@ void Server::ExecuteCommand(string commandReceived, Client *sender) {
     freeArgvMemory(argc, &argv);
 }
 
+// Client ping Server
 void Server::CommandPing(Client *sender) {
     Log(sender->GetNickname() + " enviou um ping");
     SendToClient("pong", sender);
@@ -132,6 +133,7 @@ void Server::ListenForClients() {
     }
 }
 
+// Handle client to see if it exits, or send another command
 void Server::HandleClient(Client *client) {
     while(true) {
         string receiveMsg = client->GetSocket()->Receive();
@@ -149,26 +151,31 @@ void Server::HandleClient(Client *client) {
     }
 }
 
+// Server constructor 1
 Server::Server(string ip, int port, int maxClients) {
     this->listenerSocket = new Socket(ip, port);
     this->maxClients = maxClients;
 }
 
+// Server constructor 2
 Server::Server(string ip, int maxClients) {
     this->listenerSocket = new Socket(ip);
     this->maxClients = maxClients;
 }
 
+// Server constructor 3
 Server::Server(int port, int maxClients) {
     this->listenerSocket = new Socket(port);
     this->maxClients = maxClients;
 }
 
+// Server constructor 4
 Server::Server(int maxClients) {
     this->listenerSocket = new Socket();
     this->maxClients = maxClients;
 }
 
+// Create a new Server and make it start to listening
 void Server::Start() {
     this->listenerSocket->Listen(SOMAXCONN);
     cout << "Servidor Aberto. Esperando conexões na porta " << this->listenerSocket->GetPort() << endl;
@@ -177,6 +184,7 @@ void Server::Start() {
     listeningThread.detach();
 }
 
+// Server destructor
 Server::~Server() {
     delete listenerSocket;
 

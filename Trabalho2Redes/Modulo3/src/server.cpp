@@ -1,5 +1,6 @@
 #include "../headers/server.h"
 
+// Add/Create a new chanel in the server chanel vector
 Channel * Server::CreateChannel(string channelName) {
     if(FindChannelByName(channelName) != NULL) {
         return NULL;
@@ -19,6 +20,7 @@ Channel * Server::CreateChannel(string channelName) {
     }
 }
 
+// Delete chanel known 
 void Server::DeleteChannel(Channel *channel) {
     m_cha.lock();
     for(vector<Channel *>::iterator cha = this->channelsOpen.begin() ; cha != this->channelsOpen.end() ; cha++) {
@@ -31,6 +33,7 @@ void Server::DeleteChannel(Channel *channel) {
     m_cha.unlock();
 }
 
+// Search from known channels
 Channel * Server::FindChannelByName(string channelName) {
     m_cha.lock();
     Channel *channelFound = NULL;
@@ -44,6 +47,7 @@ Channel * Server::FindChannelByName(string channelName) {
     return channelFound;
 }
 
+// Turn to string avaiable channels
 string Server::ChannelsAvailableMessage() {
     string message = "";
     message += "Os canais existentes no momento são:\n";
@@ -58,6 +62,7 @@ string Server::ChannelsAvailableMessage() {
     return message;
 }
 
+// Add Client to a server vector of clients
 Client * Server::AddClientToServer(Socket *clientSocket) {
     if(this->clientsConnected.size() >= this->maxClients) {
         return NULL;
@@ -75,12 +80,13 @@ Client * Server::AddClientToServer(Socket *clientSocket) {
     return client;
 }
 
+// Add Client to a channel
 void Server::AddClientToChannel(Client *client, Channel *channel) {
     m_cha.lock();
     channel->AddClient(client);
     m_cha.unlock();
 }
-
+// Remove Client from Server
 void Server::RemoveClientFromServer(Client *clientToRemove) {
     if(clientToRemove->GetChannel() != NULL) {
         RemoveClientFromChannel(clientToRemove);
@@ -96,7 +102,7 @@ void Server::RemoveClientFromServer(Client *clientToRemove) {
     }
     m_cli.unlock();
 }
-
+// Remove client from channel
 void Server::RemoveClientFromChannel(Client *clientToRemove) {
     Channel *channel = (Channel *) clientToRemove->GetChannel();
     bool wasAdm = clientToRemove->IsAdm();
@@ -117,12 +123,14 @@ void Server::RemoveClientFromChannel(Client *clientToRemove) {
     }
 }
 
+// Print Log in Server Terminal
 void Server::Log(string msg) {
     m_log.lock();
     cout << "-> " << msg << endl;
     m_log.unlock();
 }
 
+// Send Message from channel to server
 void Server::SendToChannel(string msg, Channel *channel) {
     Log("(server)" + channel->GetName() + " " + msg);
     string msgToSend = msg + " <<<<<";
